@@ -1,15 +1,11 @@
 # ISO 8583 parser + mock card switch — learning project
 Goal: learn modern Java and card authorization by building this myself.
-Learning beats finishing.
 
 ## Me
 ~5 yrs Java at work (Java 8, plain Spring). New to ISO 8583 and switching.
 Explain payment concepts from first principles before code.
 
 ## Domain decisions
-- When the code reaches an open payments question (routing, matching,
-  timeouts, response codes…), stop. Explain the concept and the
-  2–3 options with trade-offs. I decide.
 - Claude to record each decision in docs/scope.md with one line of why.
 
 ## Progress log
