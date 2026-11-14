@@ -13,8 +13,8 @@ public class SimRunner {
         try {
             Socket socket = Connection.connect(5001);
             OutputStream out = socket.getOutputStream();
-            String framedMessage = MessageWriter.framer(MESSAGE);
-            Connection.writer(out, framedMessage);
+            String framedMessage = MessageWriter.frame(MESSAGE);
+            Connection.write(out, framedMessage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

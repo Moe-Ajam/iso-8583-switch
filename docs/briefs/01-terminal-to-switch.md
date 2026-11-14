@@ -168,6 +168,6 @@ uses a newline as the end of a message, a different kind of framing.
 
 **Payment idea (explained back in chat):** flow in the right order; cryptogram, issuer checks and `00` = approved all right. Missing: names 0100/0110, DE39, the acquirer hop. Misconception fixed: the length header is a transport wrapper, not part of the ISO message. Why the header exists: solid (TCP is a byte stream with no boundaries).
 
-**Tip:** method names should be verbs (Clean Code, ch. 2: "Methods should have verb or verb phrase names"). `MessageWriter.framer` → `frame`, `Connection.writer` → `write`. IntelliJ: cursor on the name, Shift+F6 (Rename) updates every caller.
+**Tip:** method names should be verbs (Clean Code, ch. 2: "Methods should have verb or verb phrase names"). `MessageWriter.frame` → `frame`, `Connection.write` → `write`. IntelliJ: cursor on the name, Shift+F6 (Rename) updates every caller.
 
 **Carry over:** the > 9999 check + `assertThrows` test; port as a shared constant; `try (...)` around sockets; empty `Terminal` class; `MessageFramerTest` name.

@@ -12,7 +12,7 @@ public class Connection {
     }
 
 
-    public static void writer(OutputStream out, String message) throws IOException {
+    public static void write(OutputStream out, String message) throws IOException {
         out.write(message.getBytes(StandardCharsets.UTF_8));
     }
 
