@@ -1,5 +1,5 @@
 # Brief 01: Terminal sends a 0100 to the switch
-Status: In progress (started 2026-11-14)
+Status: Done 2026-11-14 (started 2026-11-14)
 
 ## Start here
 
@@ -16,9 +16,9 @@ reads it, removes the framing, decodes it and prints the MTI. Two separate progr
 
 **Done when**
 - [x] Your writer test passes, and `mvn test` is all green (old `CodecTest` and `MessageFramerTest` too)
-- [ ] Run the switch: it prints that it's listening and keeps waiting (doesn't exit)
+- [x] Run the switch: it prints that it's listening and keeps waiting (doesn't exit)
 - [x] Then run the terminal: the switch's console shows the line `0100`, and both programs end
-- [ ] You wrote your picks under *Decisions you'll face*, and the tap-a-card flow in `docs/payments-notes.md`
+- [x] You wrote your picks under *Decisions you'll face*, and explained the tap-a-card flow back in chat
 
 Stuck? Open the hints for your step at the bottom, or ask me any time.
 
@@ -88,12 +88,14 @@ Write the tap-a-card flow and why the length header exists in your own words in
 Does it write straight onto an `OutputStream`, or return the framed text for someone else to
 send? Is it a method next to `readMessage` in `MessageReader`, or its own class? This is a public
 method the switch and the issuer sim will use later too, so it's hard to change.
-My pick and why:
+My pick and why: in `transport`, next to `MessageReader`, because the issuer (and the switch) will need it later too.
+Verdict (2026-11-14): sound pick. Stronger reason: otherwise the real switch would depend on the fake terminal; and the read and write sides of one format belong together, so a header change touches one place. Still open: return the framed text vs write onto a stream.
 
 ### A message too long for the header
 The header has 4 digits, so the longest message it can describe is 9999. What should the writer
 do if it gets a longer one?
-My pick and why:
+My pick and why: throw an exception (A), otherwise a bug breaks the message flow and affects the next messages in the sequence.
+Verdict (2026-11-14): sound, and the reason is exactly right: a wrong header desyncs the stream, so every later message is misread (fail fast). `IllegalArgumentException` is the standard exception for a bad argument. Not built yet: the check, plus a test that expects it (`assertThrows`).
 
 ## Traps
 - **Starting the terminal first** → `ConnectException: Connection refused`. Nobody is waiting at the port yet. Start the switch first.
@@ -144,6 +146,10 @@ uses a newline as the end of a message, a different kind of framing.
 ## Check-in notes
 - Step 1: port `5001` is a bare number in `Switch.listen`; the terminal will need the same one (Clean Code: replace magic numbers with named constants).
 - Step 1: `ServerSocket` and `Socket` aren't in a `try (...)`, so they're only closed because the program ends. Matters once the switch keeps running.
+- "waiting..." is printed *after* `accept()` returns, so it shows only once a terminal has connected; it belongs before `accept()`.
+- Fixed: framing moved to `transport/MessageWriter` (test moved too, green); "waiting..." now before `accept()`.
+- `Terminal` is now an empty class; `Connection` holds both `connect` and `writer` (connecting and writing are two jobs).
+- The > 9999 check from decision 2 isn't built yet.
 - Port `5001` now appears in both `Switch` and `SimRunner`: two copies that must stay in sync.
 - The switch prints nothing until a terminal connects, so you can't tell "waiting" from "stuck" (Done-when item 2).
 - `Terminal.framer` / `Terminal.writer` are nouns; methods should be verbs (Clean Code: method names are verbs).
@@ -154,6 +160,14 @@ uses a newline as the end of a message, a different kind of framing.
 **Checks run 2026-11-14:**
 - `mvn test`: all green (`TerminalTest.framesMessage`, `CodecTest` ×2, `MessageFramerTest`).
 - Real run (`Main`, then `SimRunner`): switch printed `Connected from /127.0.0.1` then `MTI: 0100`; both programs ended. Pass.
-- Switch prints "listening" before a terminal connects: not yet (no output until connect).
-- Decisions + `docs/payments-notes.md`: not written yet.
-- Nothing committed yet.
+- Switch prints "waiting..." before a terminal connects: pass (after fix).
+- Framing moved to `transport/MessageWriter`, `MessageWriterTest` green.
+- Steps 1–5 committed in `07d7da5`; the `MessageWriter` move is not committed yet.
+
+**Decisions:** both sound (verdicts under *Decisions you'll face*). Recorded in `scope.md`.
+
+**Payment idea (explained back in chat):** flow in the right order; cryptogram, issuer checks and `00` = approved all right. Missing: names 0100/0110, DE39, the acquirer hop. Misconception fixed: the length header is a transport wrapper, not part of the ISO message. Why the header exists: solid (TCP is a byte stream with no boundaries).
+
+**Tip:** method names should be verbs (Clean Code, ch. 2: "Methods should have verb or verb phrase names"). `MessageWriter.framer` → `frame`, `Connection.writer` → `write`. IntelliJ: cursor on the name, Shift+F6 (Rename) updates every caller.
+
+**Carry over:** the > 9999 check + `assertThrows` test; port as a shared constant; `try (...)` around sockets; empty `Terminal` class; `MessageFramerTest` name.
