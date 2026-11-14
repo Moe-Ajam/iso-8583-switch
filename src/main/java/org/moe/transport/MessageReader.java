@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class MessageFramer {
+public class MessageReader {
 
     public static final int HEADER_LENGTH = 4;
 

@@ -12,7 +12,7 @@ class MessageFramerTest {
     @Test
     void readsMessageAfterLengthHeader() throws IOException {
         ByteArrayInputStream message = new ByteArrayInputStream("00100123456789".getBytes());
-        String framedMessage = MessageFramer.readMessage(message);
+        String framedMessage = MessageReader.readMessage(message);
         assertEquals("0123456789", framedMessage);
     }
 
