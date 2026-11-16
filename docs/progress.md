@@ -10,4 +10,9 @@
 - **Open questions:** why `Message` has one Java field per data element (decision in the review). What the skeleton's transport/framing looks like (not started).
 - **Concepts introduced latest session:** compute-then-return; arrange-act-assert.
 
+## From the latest review
+[2026-11-15 review](coaching/2026-11-15-review.md), suggested next steps (he chooses):
+- [ ] 1. Make the length header count bytes, not characters: write a round-trip test with `"CAFÉ"` (fails today), then make `MessageWriter.frame` count the bytes it sends.
+- [ ] 2. Keep the terminal's connection open until the reply is sent: sockets in `try (...)`, and the conversation with the terminal moves from `Main` into `Switch`.
+
 ## Session log
