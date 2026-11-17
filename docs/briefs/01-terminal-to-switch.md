@@ -12,7 +12,7 @@ reads it, removes the framing, decodes it and prints the MTI. Two separate progr
 - [x] 3a. Message writer frames a message (length header in front), test first, no network. Needs: [Writing bytes](#writing-bytes-outputstream)
 - [x] 3b. Terminal uses the writer to send the 0100 to the switch.
 - [x] 4. Switch reads the message and removes the framing (your `MessageReader.readMessage`).
-- [x] 5. Switch decodes the message and prints the MTI (your `Codec.readMessage`).
+- [x] 5. Switch decodes the message and prints the MTI (your `Codec.decodeMessage`).
 
 **Done when**
 - [x] Your writer test passes, and `mvn test` is all green (old `CodecTest` and `MessageFramerTest` too)
@@ -148,7 +148,7 @@ uses a newline as the end of a message, a different kind of framing.
 - Step 1: `ServerSocket` and `Socket` aren't in a `try (...)`, so they're only closed because the program ends. Matters once the switch keeps running.
 - "waiting..." is printed *after* `accept()` returns, so it shows only once a terminal has connected; it belongs before `accept()`.
 - Fixed: framing moved to `transport/MessageWriter` (test moved too, green); "waiting..." now before `accept()`.
-- `Terminal` is now an empty class; `Connection` holds both `connect` and `writer` (connecting and writing are two jobs).
+- `Terminal` is now an empty class; `Transporter` holds both `connect` and `writer` (connecting and writing are two jobs).
 - The > 9999 check from decision 2 isn't built yet.
 - Port `5001` now appears in both `Switch` and `SimRunner`: two copies that must stay in sync.
 - The switch prints nothing until a terminal connects, so you can't tell "waiting" from "stuck" (Done-when item 2).
@@ -168,6 +168,6 @@ uses a newline as the end of a message, a different kind of framing.
 
 **Payment idea (explained back in chat):** flow in the right order; cryptogram, issuer checks and `00` = approved all right. Missing: names 0100/0110, DE39, the acquirer hop. Misconception fixed: the length header is a transport wrapper, not part of the ISO message. Why the header exists: solid (TCP is a byte stream with no boundaries).
 
-**Tip:** method names should be verbs (Clean Code, ch. 2: "Methods should have verb or verb phrase names"). `MessageWriter.frame` → `frame`, `Connection.write` → `write`. IntelliJ: cursor on the name, Shift+F6 (Rename) updates every caller.
+**Tip:** method names should be verbs (Clean Code, ch. 2: "Methods should have verb or verb phrase names"). `MessageWriter.frame` → `frame`, `Transporter.writeToStream` → `write`. IntelliJ: cursor on the name, Shift+F6 (Rename) updates every caller.
 
 **Carry over:** the > 9999 check + `assertThrows` test; port as a shared constant; `try (...)` around sockets; empty `Terminal` class; `MessageFramerTest` name.
