@@ -9,13 +9,13 @@ class CodecTest {
 
     @Test
     void readsMti() {
-        Message message = Codec.readMessage(SAMPLE);
+        Message message = Codec.decodeMessage(SAMPLE);
         assertEquals("0100", message.getMti());
     }
 
     @Test
     void readsBitmap() {
-        Message message = Codec.readMessage(SAMPLE);
+        Message message = Codec.decodeMessage(SAMPLE);
         assertEquals("723C448108E08000", message.getBitmap());
     }
 

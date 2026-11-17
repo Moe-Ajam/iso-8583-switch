@@ -11,7 +11,7 @@ public class Main {
     static void main() {
         try {
             String messageString = Switch.listen();
-            Message message = Codec.readMessage(messageString);
+            Message message = Codec.decodeMessage(messageString);
             IO.println("MTI: " + message.getMti());
             IO.println("Done");
         } catch (IOException e) {
